@@ -9,26 +9,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Stock {
+public class UserStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 고유 ID
 
-    @Column(nullable = false)
-    private String stockCode; // 주식 코드 (예: AAPL)
-
-    @Column(nullable = false)
-    private String stockName; // 주식 이름 (예: Apple Inc.)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stockcode", nullable = false)
+    private SP500Stock sp500Stock; // SP500Stock 참조
 
     @Column(nullable = false)
     private double purchasePrice; // 매입 가격
 
     @Column(nullable = false)
     private int quantity; // 매수 수량
-
-    @Column(nullable = false)
-    private double currentPrice; // 현재 가격
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)

@@ -13,10 +13,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Member {
+public class User {
 
     @Id
-    private String userid; // 사용자 ID
+    private String id; // 사용자 ID
 
     @Column(nullable = false)
     private String password; // 비밀번호
@@ -24,9 +24,12 @@ public class Member {
     @Column(nullable = false)
     private String email; // 이메일 주소
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    private String username; // 사용자명
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios; // 회원의 포트폴리오 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards; // 회원이 작성한 게시글 목록
 }

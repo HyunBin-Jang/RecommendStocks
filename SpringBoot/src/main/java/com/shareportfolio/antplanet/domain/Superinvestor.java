@@ -11,18 +11,13 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Portfolio {
-
+public class Superinvestor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 포트폴리오 고유 ID
 
-    private String name;
+    private String name;   // 포트폴리오 이름
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
-    private List<UserStock> stocks;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 포트폴리오 소유 회원
+    @OneToMany(mappedBy = "superinvestor")
+    private List<SuperInvestorStock> stocks;
 }

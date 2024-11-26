@@ -41,12 +41,7 @@ public class SP500Service {
         SP500Stock existingStock = sp500Repository.findByStockCode(stock.getStockCode());
         if (existingStock != null) {
             // 기존 데이터 업데이트
-            existingStock.setStockName(stock.getStockName());
             existingStock.setCurrentPrice(stock.getCurrentPrice());
-            existingStock.setPreviousClosePrice(stock.getPreviousClosePrice());
-            existingStock.setDayHigh(stock.getDayHigh());
-            existingStock.setDayLow(stock.getDayLow());
-            existingStock.setOpenPrice(stock.getOpenPrice());
             existingStock.setLastUpdated(LocalDateTime.now());
             sp500Repository.save(existingStock);
         } else {
@@ -65,12 +60,7 @@ public class SP500Service {
             SP500Stock existingStock = sp500Repository.findByStockCode(stock.getStockCode());
             if (existingStock != null) {
                 // 기존 데이터 업데이트
-                existingStock.setStockName(stock.getStockName());
                 existingStock.setCurrentPrice(stock.getCurrentPrice());
-                existingStock.setPreviousClosePrice(stock.getPreviousClosePrice());
-                existingStock.setDayHigh(stock.getDayHigh());
-                existingStock.setDayLow(stock.getDayLow());
-                existingStock.setOpenPrice(stock.getOpenPrice());
                 existingStock.setLastUpdated(LocalDateTime.now());
                 sp500Repository.save(existingStock);
             } else {

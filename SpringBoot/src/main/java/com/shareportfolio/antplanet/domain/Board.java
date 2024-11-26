@@ -22,10 +22,6 @@ public class Board {
     private String content; // 게시글 내용
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member; // 게시글 작성 회원
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "portfolio_id")
-    private Portfolio portfolio; // 게시글에 첨부된 포트폴리오
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // 게시글 작성 회원
 }
