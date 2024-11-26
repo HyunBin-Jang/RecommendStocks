@@ -41,7 +41,6 @@ def fetch_superinvestors():
                                 main_text += part.strip()
 
                         investors.append({"name": main_text, "link": full_link})
-    print(investors)
     return investors
 
 
@@ -77,8 +76,9 @@ def fetch_portfolio(link):
                 if isinstance(part, str):  # 텍스트 노드만 추가
                     stock_code += part.strip()
             weight = cols[2].text.strip()
-            shares = cols[4].text.strip()
-            stocks.append({"stockCode": stock_code, "weight": weight, "shares": shares})
+            quantity = cols[4].text.strip()
+            quantity = int(quantity.replace(",", ""))
+            stocks.append({"stockCode": stock_code, "weight": weight, "quantity": quantity})
     return stocks
 
 
