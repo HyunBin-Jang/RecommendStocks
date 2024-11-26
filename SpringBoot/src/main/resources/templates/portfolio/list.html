@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>User Portfolios</title>
+  <!-- Include Bootstrap CSS -->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <h1 class="mb-4">Your Portfolios</h1>
+
+  <!-- Portfolio Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Portfolio List</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+          <tr>
+            <th>Portfolio Name</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="portfolio : ${portfolios}">
+            <td th:text="${portfolio.name}">Portfolio Name</td>
+            <td>
+              <a th:href="@{/portfolio/{id}(id=${portfolio.id})}" class="btn btn-info btn-sm">
+                View
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <a th:href="@{/portfolio/create}" class="btn btn-primary">Create New Portfolio</a>
+</div>
+
+<!-- Include Bootstrap JS -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
