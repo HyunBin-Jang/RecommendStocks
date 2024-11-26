@@ -38,4 +38,8 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
+
+    public User findById(String userId) {
+        return userRepository.findById(userId).orElse(null); // USER_ID로 User 조회
+    }
 }
