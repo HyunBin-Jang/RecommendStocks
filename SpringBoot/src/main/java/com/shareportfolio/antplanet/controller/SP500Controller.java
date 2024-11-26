@@ -48,7 +48,7 @@ public class SP500Controller {
      */
     @GetMapping("/{stockCode}")
     public ResponseEntity<SP500Stock> getStockByCode(@PathVariable String stockCode) {
-        SP500Stock stock = sp500Service.getStockByCode(stockCode);
+        SP500Stock stock = sp500Service.getStockByCode(stockCode).orElse(null);
         if (stock != null) {
             return ResponseEntity.ok(stock);
         }
