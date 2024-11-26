@@ -2,6 +2,7 @@ package com.shareportfolio.antplanet.controller;
 
 import com.shareportfolio.antplanet.domain.User;
 import com.shareportfolio.antplanet.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,17 +31,28 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestParam("id") String id,
                         @RequestParam("password") String password,
+                        HttpSession session,
                         Model model) {
         System.out.println(id + " " + password);
         boolean isAuthenticated = userService.authenticate(id, password);
 
         if (isAuthenticated) {
             model.addAttribute("id", id);
+            session.setAttribute("USER_ID", id); // 세션에 사용자 정보 저장
             return "redirect:/"; // 로그인 성공 시 프로필 페이지로 이동
         } else {
             model.addAttribute("error", "존재하지 않는 아이디 혹은 비밀번호 입니다");
             return "/login"; // 로그인 실패 시 다시 로그인 페이지
         }
+    }
+
+    /**
+     * 로그아웃 처리
+     */
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화
+        return "redirect:/login"; // 로그인 페이지로 이동
     }
 
     /**
