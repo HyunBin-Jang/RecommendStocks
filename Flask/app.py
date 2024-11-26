@@ -4,11 +4,12 @@ import pandas as pd
 import requests
 from datetime import datetime
 import json
+from crawling import fetch_superinvestors, fetch_portfolio
 
 app = Flask(__name__)
 
 # Spring Boot 서버 URL
-SPRING_BOOT_API_URL = "http://localhost:8080/api/sp500/bulk-update"
+SPRING_BOOT_API_URL = "http://localhost:8080"
 
 
 def load_json(file_path):
@@ -73,14 +74,33 @@ def update_sp500():
         stock_data = get_sp500_data()
 
         # 데이터를 Spring Boot로 전송
-        response = requests.post(SPRING_BOOT_API_URL, json=stock_data)
+        response = requests.post(SPRING_BOOT_API_URL + "/api/sp500/bulk-update", json=stock_data)
 
         if response.status_code == 200:
-            return jsonify({"message": "S&P 500 데이터 업데이트 완료"}), 200
+            return jsonify({"message": "S&P 500 데이터 업데이트 완료"})
         else:
             return jsonify({"error": "Spring Boot 업데이트 실패", "details": response.text}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/update-superinvestor', methods=['POST'])
+def update_superinvestor():
+    try:
+        superinvestors = fetch_superinvestors()
+        portfolios = []
+        for investor in superinvestors:
+            portfolio = fetch_portfolio(investor["link"])
+            portfolios.append({
+                "name" : investor["name"],
+                "stocks" : portfolio
+            })
+        response = requests.post(SPRING_BOOT_API_URL + "/api/superinvestor", json=portfolios)
+
+        if response.status_code == 200:
+            return jsonify({"message": "데이터 업데이트 완료"})
+        else:
+            return jsonify({"error": "업데이트 실패", "details": response.text}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
