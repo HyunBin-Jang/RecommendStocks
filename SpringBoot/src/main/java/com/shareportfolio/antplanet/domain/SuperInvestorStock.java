@@ -26,5 +26,5 @@ public class SuperInvestorStock {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "superinvestor_id", nullable = false)
-    private Superinvestor superinvestor; // 소속된 포트폴리오
+    private SuperInvestor superinvestor; // 소속된 포트폴리오
 }

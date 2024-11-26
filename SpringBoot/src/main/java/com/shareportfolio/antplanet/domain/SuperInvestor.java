@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Superinvestor {
+public class SuperInvestor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 포트폴리오 고유 ID
