@@ -22,7 +22,7 @@ public class SuperInvestorStock {
     private int quantity; // 매수 수량
 
     @Column(nullable = false)
-    private double Weight;
+    private double weight;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "superinvestor_id", nullable = false)

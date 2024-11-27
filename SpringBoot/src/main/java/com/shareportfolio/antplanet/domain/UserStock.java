@@ -25,6 +25,9 @@ public class UserStock {
     @Column(nullable = false)
     private int quantity; // 매수 수량
 
+    @Column(nullable = false)
+    private Double weight; // 포트폴리오에서의 비중
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)
     private Portfolio portfolio; // 소속된 포트폴리오
