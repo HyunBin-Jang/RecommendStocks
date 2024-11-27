@@ -22,20 +22,6 @@ public class UserStockController {
     @Autowired
     private PortfolioService portfolioService;
 
-    // 특정 포트폴리오의 주식 목록 페이지
-    @GetMapping("/{portfolioId}")
-    public String getUserStocksByPortfolio(@PathVariable Long portfolioId, Model model) {
-        Optional<Portfolio> portfolio = portfolioService.getPortfolioById(portfolioId);
-        if (portfolio.isPresent()) {
-            List<UserStock> stocks = userStockService.getStocksByPortfolio(portfolio.get());
-            model.addAttribute("stocks", stocks);
-            model.addAttribute("portfolio", portfolio.get());
-            return "userstocks/list"; // templates/userstocks/list.html
-        } else {
-            return "redirect:/portfolio?error=PortfolioNotFound";
-        }
-    }
-
     // 주식 생성 폼
     @GetMapping("/{portfolioId}/create")
     public String createUserStockForm(@PathVariable Long portfolioId, Model model) {
@@ -56,23 +42,11 @@ public class UserStockController {
         Optional<Portfolio> portfolio = portfolioService.getPortfolioById(portfolioId);
         if (portfolio.isPresent()) {
             userStock.setPortfolio(portfolio.get());
-            userStockService.createOrUpdateUserStock(userStock);
+            userStockService.updateUserStock(userStock);
             return "redirect:/userstocks/" + portfolioId;
         } else {
             return "redirect:/portfolio?error=PortfolioNotFound";
         }
     }
 
-    // 주식 삭제
-    @PostMapping("/{id}/delete")
-    public String deleteUserStock(@PathVariable Long id) {
-        Optional<UserStock> userStock = userStockService.getUserStockById(id);
-        if (userStock.isPresent()) {
-            Long portfolioId = userStock.get().getPortfolio().getId();
-            userStockService.deleteUserStock(id);
-            return "redirect:/userstocks/" + portfolioId;
-        } else {
-            return "redirect:/portfolio?error=UserStockNotFound";
-        }
-    }
 }

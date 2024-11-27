@@ -1,18 +1,21 @@
 package com.shareportfolio.antplanet.controller;
 
 import com.shareportfolio.antplanet.domain.Portfolio;
+import com.shareportfolio.antplanet.domain.SP500Stock;
 import com.shareportfolio.antplanet.domain.User;
+import com.shareportfolio.antplanet.domain.UserStock;
 import com.shareportfolio.antplanet.service.PortfolioService;
+import com.shareportfolio.antplanet.service.SP500Service;
 import com.shareportfolio.antplanet.service.UserService;
+import com.shareportfolio.antplanet.service.UserStockService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+
 
 @Controller
 @RequestMapping("/portfolio")
@@ -22,6 +25,10 @@ public class PortfolioController {
     private PortfolioService portfolioService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserStockService userStockService;
+    @Autowired
+    private SP500Service sp500Service;
 
     // 사용자의 포트폴리오 목록 페이지
     @GetMapping
@@ -45,14 +52,25 @@ public class PortfolioController {
 
     // 특정 포트폴리오 상세 페이지
     @GetMapping("/{id}")
-    public String getPortfolioDetail(@PathVariable Long id, Model model) {
-        Optional<Portfolio> portfolio = portfolioService.getPortfolioById(id);
-        if (portfolio.isPresent()) {
-            model.addAttribute("portfolio", portfolio.get());
-            return "portfolio/detail"; // Thymeleaf 템플릿 (templates/portfolio/detail.html)
-        } else {
-            return "redirect:/portfolio?error=PortfolioNotFound";
-        }
+    public String portfolioDetail(@PathVariable("id") Long id, Model model) {
+        Portfolio portfolio = portfolioService.getPortfolioById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
+        List<UserStock> userStocks = portfolio.getStocks();
+
+        // 차트 데이터 준비
+        List<String> chartLabels = userStocks.stream()
+                .map(stock -> stock.getSp500Stock().getStockCode())
+                .toList();
+        List<Double> chartData = userStocks.stream()
+                .map(UserStock::getWeight)
+                .toList();
+
+        model.addAttribute("portfolio", portfolio);
+        model.addAttribute("userStocks", userStocks);
+        model.addAttribute("chartLabels", chartLabels);
+        model.addAttribute("chartData", chartData);
+
+        return "portfolio/detail";
     }
 
     // 포트폴리오 생성 폼
@@ -82,16 +100,63 @@ public class PortfolioController {
 
     // 포트폴리오 삭제
     @PostMapping("/{id}/delete")
-    public String deletePortfolio(@PathVariable Long id) {
+    public String deletePortfolio(@PathVariable("id") Long id) {
         portfolioService.deletePortfolio(id);
         return "redirect:/portfolio";
     }
 
-    // 현재 사용자 정보를 가져오는 메서드 (예제용)
-    private User getCurrentUser(Principal principal) {
-        // 실제 구현은 SecurityContext에서 User를 가져와야 함
-        User user = new User();
-        user.setUsername(principal.getName());
-        return user;
+    @GetMapping("/{id}/edit")
+    public String editPortfolio(@PathVariable("id") Long id, Model model) {
+        Portfolio portfolio = portfolioService.getPortfolioById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
+
+        List<UserStock> userStocks = portfolio.getStocks();
+
+        model.addAttribute("portfolio", portfolio);
+        model.addAttribute("userStocks", userStocks);
+
+        return "portfolio/edit";
+    }
+
+    @PostMapping("/{id}/update")
+    public String updatePortfolio(@PathVariable("id") Long id,
+                                  @RequestParam(name = "stocks", required = false) List<UserStock> stocks,
+                                  @RequestParam(name = "newStockCode", required = false) String newStockCode,
+                                  @RequestParam(name = "newStockQuantity", required = false) Integer newStockQuantity,
+                                  @RequestParam(name = "newStockPurchasePrice", required = false) Double newStockPurchasePrice){
+        Portfolio portfolio = portfolioService.getPortfolioById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
+
+        // Update existing stocks
+        if (stocks != null) {
+            for (UserStock stock : stocks) {
+                UserStock existingStock = userStockService.getStockById(stock.getId());
+                existingStock.setQuantity(stock.getQuantity());
+                existingStock.setPurchasePrice(stock.getPurchasePrice());
+                userStockService.updateUserStock(existingStock);
+            }
+        }
+
+        // Add new stock
+        if (newStockCode != null && !newStockCode.isEmpty() && newStockQuantity != null && newStockPurchasePrice != null) {
+            SP500Stock sp500Stock = sp500Service.getStockByCode(newStockCode)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid stock code"));
+
+            UserStock newStock = new UserStock();
+            newStock.setPortfolio(portfolio);
+            newStock.setSp500Stock(sp500Stock);
+            newStock.setQuantity(newStockQuantity);
+            newStock.setPurchasePrice(newStockPurchasePrice);
+
+            userStockService.updateUserStock(newStock);
+        }
+
+        return "redirect:/portfolio/" + id;
+    }
+
+    @PostMapping("/{id}/delete-stock/{stockId}")
+    public String deleteStock(@PathVariable("id") Long id, @PathVariable("stockId") Long stockId) {
+        userStockService.deleteStockById(stockId);
+        return "redirect:/portfolio/" + id + "/edit";
     }
 }

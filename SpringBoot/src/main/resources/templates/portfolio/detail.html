@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Portfolio Details</title>
+    <!-- Include SB Admin 2 styles -->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="/vendor/chart.js/Chart.min.js"></script> <!-- Chart.js for pie chart -->
+</head>
+<body id="page-top">
+<div class="container mt-4">
+    <h1 th:text="'Portfolio: ' + ${portfolio.name}">Portfolio Name</h1>
+
+    <!-- Portfolio Stocks Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Stocks in Portfolio</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Stock Code</th>
+                        <th>Quantity</th>
+                        <th>Current Price</th>
+                        <th>Total Value</th>
+                        <th>Weight (%)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="stock : ${userStocks}">
+                        <td th:text="${stock.sp500Stock.stockCode}">Stock Code</td>
+                        <td th:text="${stock.quantity}">Quantity</td>
+                        <td th:text="${stock.sp500Stock.currentPrice}">Current Price</td>
+                        <td th:text="${stock.quantity * stock.sp500Stock.currentPrice}">Total Value</td>
+                        <td th:text="${stock.weight}">Weight (%)</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Pie Chart -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Portfolio Distribution</h6>
+        </div>
+        <div class="card-body">
+            <canvas id="portfolioPieChart"></canvas>
+        </div>
+    </div>
+
+    <a th:href="@{/portfolio}" class="btn btn-secondary">Back to Portfolio List</a>
+</div>
+
+<!-- Include SB Admin 2 scripts -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/sb-admin-2.min.js"></script>
+
+<!-- Chart.js Script -->
+<script>
+    const ctx = document.getElementById('portfolioPieChart').getContext('2d');
+    const pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: /*[[${chartLabels}]]*/, // 주식 코드 배열
+            datasets: [{
+                data: /*[[${chartData}]]*/, // 주식 비중 배열
+                backgroundColor: [
+                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'
+                ],
+                hoverBackgroundColor: [
+                    '#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617', '#6c757d'
+                ],
+            }]
+        },
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit Portfolio</title>
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <h1 th:text="'Edit Portfolio: ' + ${portfolio.name}">Edit Portfolio</h1>
+
+  <!-- UserStocks Table -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Stocks in Portfolio</h6>
+    </div>
+    <div class="card-body">
+      <form th:action="@{/portfolio/{id}/update(id=${portfolio.id})}" method="post">
+        <div class="table-responsive">
+          <table class="table table-bordered" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+              <th>Stock Code</th>
+              <th>Quantity</th>
+              <th>Purchase Price</th>
+              <th>Current Price</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="stock : ${userStocks}">
+              <td>
+                <input type="text" class="form-control" th:value="${stock.sp500Stock.stockCode}" readonly>
+              </td>
+              <td>
+                <input type="number" class="form-control" th:name="'stocks[' + ${stock.id} + '].quantity'" th:value="${stock.quantity}">
+              </td>
+              <td>
+                <input type="number" step="0.01" class="form-control" th:name="'stocks[' + ${stock.id} + '].purchasePrice'" th:value="${stock.purchasePrice}">
+              </td>
+              <td th:text="${stock.sp500Stock.currentPrice}">Current Price</td>
+              <td>
+                <button type="button" class="btn btn-danger btn-sm" th:onclick="'deleteStock(' + ${stock.id} + ')'">Delete</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Add UserStock -->
+        <h6 class="mt-4">Add New Stock</h6>
+        <div class="form-group">
+          <label for="newStockCode">Stock Code</label>
+          <input type="text" class="form-control" id="newStockCode" name="newStockCode">
+        </div>
+        <div class="form-group">
+          <label for="newStockQuantity">Quantity</label>
+          <input type="number" class="form-control" id="newStockQuantity" name="newStockQuantity">
+        </div>
+        <div class="form-group">
+          <label for="newStockPurchasePrice">Purchase Price</label>
+          <input type="number" step="0.01" class="form-control" id="newStockPurchasePrice" name="newStockPurchasePrice">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Update Portfolio</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Include SB Admin 2 scripts -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
