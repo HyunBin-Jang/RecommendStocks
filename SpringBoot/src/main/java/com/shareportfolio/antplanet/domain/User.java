@@ -29,7 +29,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios; // 회원의 포트폴리오 목록
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Board> boards; // 회원이 작성한 게시글 목록
 }

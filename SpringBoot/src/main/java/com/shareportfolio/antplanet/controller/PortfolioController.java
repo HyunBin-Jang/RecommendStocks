@@ -4,17 +4,19 @@ import com.shareportfolio.antplanet.domain.Portfolio;
 import com.shareportfolio.antplanet.domain.SP500Stock;
 import com.shareportfolio.antplanet.domain.User;
 import com.shareportfolio.antplanet.domain.UserStock;
-import com.shareportfolio.antplanet.service.PortfolioService;
-import com.shareportfolio.antplanet.service.SP500Service;
-import com.shareportfolio.antplanet.service.UserService;
-import com.shareportfolio.antplanet.service.UserStockService;
+import com.shareportfolio.antplanet.dto.RecommendedStockDto;
+import com.shareportfolio.antplanet.dto.UserStockWeightDto;
+import com.shareportfolio.antplanet.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -29,6 +31,8 @@ public class PortfolioController {
     private UserStockService userStockService;
     @Autowired
     private SP500Service sp500Service;
+    @Autowired
+    private PortfolioRecommendationService portfolioRecommendationService;
 
     // 사용자의 포트폴리오 목록 페이지
     @GetMapping
@@ -57,16 +61,40 @@ public class PortfolioController {
                 .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
         List<UserStock> userStocks = portfolio.getStocks();
 
+       List<Map<String, Object>> stockDetails = userStockService.getStockDetailsByPortfolioId(id);
+
+        // 주식별 수익률 및 포트폴리오 통합 잔고 계산
+        double totalInvestment = userStocks.stream()
+                .mapToDouble(stock -> stock.getPurchasePrice() * stock.getQuantity())
+                .sum();
+
+        double totalCurrentValue = userStocks.stream()
+                .mapToDouble(stock -> stock.getSp500Stock().getCurrentPrice() * stock.getQuantity())
+                .sum();
+        double portfolioReturn = Math.round(((totalCurrentValue - totalInvestment) / totalInvestment) * 100);
+
+        // 추천 주식 계산
+        List<RecommendedStockDto> recommendedStocks = portfolioRecommendationService.recommendStocks(id);
+        recommendedStocks.forEach(stock -> {
+            int percentage = (int) Math.round(stock.getSimilarity() * 100);
+            stock.setSimilarityPercentage(percentage + "%");
+        });
+
         // 차트 데이터 준비
         List<String> chartLabels = userStocks.stream()
                 .map(stock -> stock.getSp500Stock().getStockCode())
                 .toList();
-        List<Double> chartData = userStocks.stream()
-                .map(UserStock::getWeight)
+        List<UserStockWeightDto> weights = userStockService.calculatePortfolioWeights(id);
+        List<Double> chartData = weights.stream()
+                .map(UserStockWeightDto::getWeight)
                 .toList();
 
         model.addAttribute("portfolio", portfolio);
-        model.addAttribute("userStocks", userStocks);
+        model.addAttribute("stockDetails", stockDetails);
+        model.addAttribute("totalInvestment", totalInvestment);
+        model.addAttribute("totalCurrentValue", totalCurrentValue);
+        model.addAttribute("portfolioReturn", portfolioReturn);
+        model.addAttribute("recommendedStocks", recommendedStocks);
         model.addAttribute("chartLabels", chartLabels);
         model.addAttribute("chartData", chartData);
 
@@ -147,14 +175,13 @@ public class PortfolioController {
             newStock.setSp500Stock(sp500Stock);
             newStock.setQuantity(newStockQuantity);
             newStock.setPurchasePrice(newStockPurchasePrice);
-
             userStockService.updateUserStock(newStock);
         }
 
         return "redirect:/portfolio/" + id;
     }
 
-    @PostMapping("/{id}/delete-stock/{stockId}")
+    @PostMapping("/{id}/delete/{stockId}")
     public String deleteStock(@PathVariable("id") Long id, @PathVariable("stockId") Long stockId) {
         userStockService.deleteStockById(stockId);
         return "redirect:/portfolio/" + id + "/edit";

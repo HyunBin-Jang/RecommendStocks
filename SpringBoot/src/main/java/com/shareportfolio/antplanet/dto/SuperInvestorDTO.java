@@ -1,4 +1,4 @@
-package com.shareportfolio.antplanet.controller;
+package com.shareportfolio.antplanet.dto;
 
 import lombok.Getter;
 import lombok.Setter;

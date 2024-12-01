@@ -1,5 +1,6 @@
 package com.shareportfolio.antplanet.controller;
 
+import com.shareportfolio.antplanet.dto.SuperInvestorDTO;
 import com.shareportfolio.antplanet.service.SuperInvestorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

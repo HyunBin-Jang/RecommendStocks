@@ -26,9 +26,6 @@
   <!-- Sidebar -->
   <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/}">
-      <div class="sidebar-brand-icon rotate-n-15">
-        <i class="fas fa-laugh-wink"></i>
-      </div>
       <div class="sidebar-brand-text mx-3">AntPlanet<sup>2</sup></div>
     </a>
 
@@ -37,25 +34,12 @@
 
     <!-- Sidebar Items -->
     <li class="nav-item">
-      <a class="nav-link" th:href="@{/mypage}">
-        <i class="fas fa-fw fa-user"></i>
-        <span>My Page</span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" th:href="@{/stock-details}">
-        <i class="fas fa-fw fa-info-circle"></i>
-        <span>Stock Details</span>
-      </a>
-    </li>
-    <li class="nav-item">
       <a class="nav-link" th:href="@{/portfolio}">
         <i class="fas fa-fw fa-folder"></i>
         <span>Portfolio</span>
       </a>
     </li>
     <hr class="sidebar-divider d-none d-md-block">
-
     <!-- Sidebar Toggler -->
     <div class="text-center d-none d-md-inline">
       <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -76,7 +60,18 @@
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="mr-2 d-none d-lg-inline text-gray-600 small" th:text="${userName}">User</span>
-              <img class="img-profile rounded-circle" th:src="@{/img/undraw_profile.svg}">
+              <div>
+                <button th:if="${isLoggedIn}"
+                        th:onclick="window.location.href='/logout'"
+                        class="btn btn-danger">
+                  Logout
+                </button>
+                <button th:if="${!isLoggedIn}"
+                        th:onclick="window.location.href='/login'"
+                        class="btn btn-primary">
+                  Login
+                </button>
+              </div>
             </a>
           </li>
         </ul>
@@ -98,21 +93,10 @@
             <canvas id="myPortfolioChart"></canvas>
           </div>
         </div>
-
-        <!-- Stock Market Chart -->
-        <div class="card shadow mb-4">
-          <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Stock Market Overview</h6>
-          </div>
-          <div class="card-body">
-            <canvas id="stockMarketChart"></canvas>
-          </div>
-        </div>
-
         <!-- Other Users' Portfolios -->
         <div class="card shadow mb-4">
           <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Other Users' Portfolios</h6>
+            <h6 class="m-0 font-weight-bold text-primary">SuperInvestors' Portfolios</h6>
           </div>
           <div class="card-body">
             <div th:each="portfolio : ${otherPortfolios}">
@@ -122,7 +106,6 @@
         </div>
       </div>
       <!-- /.container-fluid -->
-
     </div>
     <!-- End of Main Content -->
 

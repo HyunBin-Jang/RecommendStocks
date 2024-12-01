@@ -1,13 +1,12 @@
 package com.shareportfolio.antplanet.service;
 
-import com.shareportfolio.antplanet.controller.SuperInvestorDTO;
+import com.shareportfolio.antplanet.dto.SuperInvestorDTO;
 import com.shareportfolio.antplanet.domain.SP500Stock;
 import com.shareportfolio.antplanet.domain.SuperInvestor;
 import com.shareportfolio.antplanet.domain.SuperInvestorStock;
 import com.shareportfolio.antplanet.repository.SP500StockRepository;
 import com.shareportfolio.antplanet.repository.SuperInvestorRepository;
 import com.shareportfolio.antplanet.repository.SuperInvestorStockRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class SuperInvestorService {
 
 
     @Transactional
-    private void saveOrUpdateSuperinvestor(SuperInvestorDTO superInvestorDTO) {
+    protected void saveOrUpdateSuperinvestor(SuperInvestorDTO superInvestorDTO) {
         // Superinvestor 찾거나 생성
         SuperInvestor superInvestor = superInvestorRepository.findByName(superInvestorDTO.getName())
                 .orElseGet(() -> {

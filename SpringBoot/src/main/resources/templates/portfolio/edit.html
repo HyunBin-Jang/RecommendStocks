@@ -40,7 +40,9 @@
               </td>
               <td th:text="${stock.sp500Stock.currentPrice}">Current Price</td>
               <td>
-                <button type="button" class="btn btn-danger btn-sm" th:onclick="'deleteStock(' + ${stock.id} + ')'">Delete</button>
+                <form th:action="@{/portfolio/{id}/delete/{stockId}(id=${portfolio.id}, stockId=${stock.id})}" method="post">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
               </td>
             </tr>
             </tbody>

@@ -17,12 +17,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public String mainPage(HttpSession session, Model model) {
+
+        Object userId = session.getAttribute("USER_ID"); // 세션에서 사용자 ID 가져오기
+
+        model.addAttribute("isLoggedIn", userId != null);
+        model.addAttribute("userName", userId);
+        return "index";
+    }
     /**
      * 로그인 페이지
      */
     @GetMapping("/login")
     public String loginPage() {
-        return "/login"; // templates/login.html로 매핑
+        return "login"; // templates/login.html로 매핑
     }
 
     /**
@@ -42,7 +51,7 @@ public class UserController {
             return "redirect:/"; // 로그인 성공 시 프로필 페이지로 이동
         } else {
             model.addAttribute("error", "존재하지 않는 아이디 혹은 비밀번호 입니다");
-            return "/login"; // 로그인 실패 시 다시 로그인 페이지
+            return "login"; // 로그인 실패 시 다시 로그인 페이지
         }
     }
 

@@ -19,14 +19,11 @@ public class UserStock {
     @JoinColumn(name = "stockcode", nullable = false)
     private SP500Stock sp500Stock; // SP500Stock 참조
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DECIMAL(10, 1)")
     private double purchasePrice; // 매입 가격
 
     @Column(nullable = false)
     private int quantity; // 매수 수량
-
-    @Column(nullable = false)
-    private Double weight; // 포트폴리오에서의 비중
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)

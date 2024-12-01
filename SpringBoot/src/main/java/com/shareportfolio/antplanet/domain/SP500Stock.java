@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,9 +17,9 @@ public class SP500Stock {
     private String stockCode; // 주식 코드 (예: AAPL)
 
     @Column(nullable = false)
-    private String stockName; // 주식 이름 (예: Apple Inc.)
+    private String stockName; // 주식 이름(KR) (예: 애플)
 
-    @Column(nullable = true)
+    @Column(nullable = false, columnDefinition = "DECIMAL(10, 1)")
     private Double currentPrice; // 현재 가격
 
     @Column(nullable = false)

@@ -11,30 +11,50 @@
 <div class="container mt-4">
     <h1 th:text="'Portfolio: ' + ${portfolio.name}">Portfolio Name</h1>
 
+    <!-- Portfolio Summary -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Portfolio Summary</h6>
+        </div>
+        <div class="card-body">
+            <p>Total Investment: $<span th:text="${totalInvestment}">$0.00</span></p>
+            <p>Current Value: $<span th:text="${totalCurrentValue}">$0.00</span></p>
+            <p>Portfolio Return: <span th:text="${portfolioReturn}">0.00</span>%</p>
+        </div>
+    </div>
+
     <!-- Portfolio Stocks Table -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Stocks in Portfolio</h6>
+            <div class="text-right">
+                <a th:href="@{/portfolio/{id}/edit(id=${portfolio.id})}" class="btn btn-warning btn-sm">Edit Portfolio</a>
+            </div>
         </div>
+        <!-- Portfolio Edit Button -->
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                     <tr>
                         <th>Stock Code</th>
+                        <th>Stock Name(KR)</th>
                         <th>Quantity</th>
-                        <th>Current Price</th>
-                        <th>Total Value</th>
-                        <th>Weight (%)</th>
+                        <th>Purchase Price($)</th>
+                        <th>Current Price($)</th>
+                        <th>Total Value($)</th>
+                        <th>Return (%)</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="stock : ${userStocks}">
-                        <td th:text="${stock.sp500Stock.stockCode}">Stock Code</td>
+                    <tr th:each="stock : ${stockDetails}">
+                        <td th:text="${stock.stockCode}">Stock Code</td>
+                        <td th:text="${stock.stockName}">Apple Inc.</td>
                         <td th:text="${stock.quantity}">Quantity</td>
-                        <td th:text="${stock.sp500Stock.currentPrice}">Current Price</td>
-                        <td th:text="${stock.quantity * stock.sp500Stock.currentPrice}">Total Value</td>
-                        <td th:text="${stock.weight}">Weight (%)</td>
+                        <td th:text="${stock.purchasePrice}">$0.00</td>
+                        <td th:text="${stock.currentPrice}">$0.00</td>
+                        <td th:text="${stock.currentPrice * stock.quantity}">$0.00</td>
+                        <td th:text="${stock.returnPercentage}">0.00%</td>
                     </tr>
                     </tbody>
                 </table>
@@ -52,6 +72,35 @@
         </div>
     </div>
 
+    <!-- Recommended Stocks Section -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Recommended Stocks</h6>
+            <button id="showRecommendationsButton" class="btn btn-primary btn-sm float-right">
+                Show Recommendations
+            </button>
+        </div>
+        <div class="card-body" id="recommendedStocks" style="display: none;">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Stock Code</th>
+                    <th>Stock Name</th>
+                    <th>SuperInvestor</th>
+                    <th>Similarity (%)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="rec : ${recommendedStocks}">
+                    <td th:text="${rec.stock.stockCode}">AAPL</td>
+                    <td th:text="${rec.stock.stockName}">Apple Inc.</td>
+                    <td th:text="${rec.superInvestorName}">Warren Buffett</td>
+                    <td th:text="${rec.similarityPercentage}">0%</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <a th:href="@{/portfolio}" class="btn btn-secondary">Back to Portfolio List</a>
 </div>
 
@@ -61,14 +110,16 @@
 <script src="/js/sb-admin-2.min.js"></script>
 
 <!-- Chart.js Script -->
-<script>
+<script th:inline="javascript">
+    const chartLabels = /*[[${chartLabels}]]*/ [];
+    const chartData = /*[[${chartData}]]*/ [];
     const ctx = document.getElementById('portfolioPieChart').getContext('2d');
     const pieChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: /*[[${chartLabels}]]*/, // 주식 코드 배열
+            labels: chartLabels, // 주식 코드 배열
             datasets: [{
-                data: /*[[${chartData}]]*/, // 주식 비중 배열
+                data: chartData, // 주식 비중 배열
                 backgroundColor: [
                     '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'
                 ],
@@ -77,6 +128,23 @@
                 ],
             }]
         },
+    });
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const button = document.getElementById("showRecommendationsButton");
+        const recommendationsDiv = document.getElementById("recommendedStocks");
+
+        button.addEventListener("click", function () {
+            if (recommendationsDiv.style.display === "none") {
+                recommendationsDiv.style.display = "block";
+                button.textContent = "Hide Recommendations";
+            } else {
+                recommendationsDiv.style.display = "none";
+                button.textContent = "Show Recommendations";
+            }
+        });
     });
 </script>
 </body>

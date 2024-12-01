@@ -21,7 +21,7 @@ public class SuperInvestorStock {
     @Column(nullable = false)
     private int quantity; // 매수 수량
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DECIMAL(10, 2)")
     private double weight;
 
     @ManyToOne(fetch = FetchType.LAZY)
