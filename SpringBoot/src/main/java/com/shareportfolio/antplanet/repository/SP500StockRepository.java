@@ -14,4 +14,6 @@ public interface SP500StockRepository extends JpaRepository<SP500Stock, Long> {
      * @return SP500Stock 엔터티
      */
     Optional<SP500Stock> findByStockCode(String stockCode);
+
+    boolean existsByStockCode(String stockCode);
 }

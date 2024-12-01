@@ -17,15 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
-    public String mainPage(HttpSession session, Model model) {
-
-        Object userId = session.getAttribute("USER_ID"); // 세션에서 사용자 ID 가져오기
-
-        model.addAttribute("isLoggedIn", userId != null);
-        model.addAttribute("userName", userId);
-        return "index";
-    }
     /**
      * 로그인 페이지
      */

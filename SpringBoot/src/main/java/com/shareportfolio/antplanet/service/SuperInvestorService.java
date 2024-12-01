@@ -30,7 +30,6 @@ public class SuperInvestorService {
         }
     }
 
-
     @Transactional
     protected void saveOrUpdateSuperinvestor(SuperInvestorDTO superInvestorDTO) {
         // Superinvestor 찾거나 생성

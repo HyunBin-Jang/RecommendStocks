@@ -99,9 +99,7 @@
             <h6 class="m-0 font-weight-bold text-primary">SuperInvestors' Portfolios</h6>
           </div>
           <div class="card-body">
-            <div th:each="portfolio : ${otherPortfolios}">
-              <canvas th:attr="id='portfolioChart-' + ${portfolio.id}"></canvas>
-            </div>
+            <canvas id="superInvestorChart"></canvas>
           </div>
         </div>
       </div>
@@ -129,8 +127,22 @@
 <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
 <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
-<script>
+<script th:inline="javascript">
   // JavaScript for rendering charts
+    const userChartLabels = /*[[${userChartLabels}]]*/ [];
+    const userChartData = /*[[${userChartData}]]*/ [];
+    const userPortfolioCtx = document.getElementById('myPortfolioChart').getContext('2d');
+    new Chart(userPortfolioCtx, {
+    type: 'pie',
+    data: {
+    labels: userChartLabels,
+    datasets: [{
+    data: userChartData,
+    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
+  }]
+  }
+  });
+
 </script>
 </body>
 

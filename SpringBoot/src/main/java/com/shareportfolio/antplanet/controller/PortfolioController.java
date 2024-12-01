@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -151,10 +152,13 @@ public class PortfolioController {
                                   @RequestParam(name = "stocks", required = false) List<UserStock> stocks,
                                   @RequestParam(name = "newStockCode", required = false) String newStockCode,
                                   @RequestParam(name = "newStockQuantity", required = false) Integer newStockQuantity,
-                                  @RequestParam(name = "newStockPurchasePrice", required = false) Double newStockPurchasePrice){
+                                  @RequestParam(name = "newStockPurchasePrice", required = false) Double newStockPurchasePrice,
+                                  RedirectAttributes redirectAttributes){
         Portfolio portfolio = portfolioService.getPortfolioById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
-
+        if (!sp500Service.isSP500Stock(newStockCode)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "The stock code is not part of the S&P 500.");
+        }
         // Update existing stocks
         if (stocks != null) {
             for (UserStock stock : stocks) {

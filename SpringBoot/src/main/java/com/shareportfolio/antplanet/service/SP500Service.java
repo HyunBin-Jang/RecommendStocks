@@ -82,4 +82,7 @@ public class SP500Service {
             sp500StockRepository.delete(stock);
         }
     }
+    public boolean isSP500Stock(String stockCode) {
+        return sp500StockRepository.existsByStockCode(stockCode);
+    }
 }
